@@ -29,22 +29,28 @@ jobs:
       - name: Send greeting
         run: echo "Hello ${{ inputs.name }}"
 
-      - name: install git-crypt
-        run: |
-          sudo apt-get update
-          sudo apt-get install git-crypt
+      # - name: install git-crypt
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install git-crypt
 
       - uses: actions/checkout@v3
         with:
           fetch-depth: "0"
 
-      - name: encrypt secrets
-        run: |
-          git-crypt unlock ./crypt_key
+      # - name: encrypt secrets
+      #   run: |
+      #     git-crypt unlock ./crypt_key
 
-      - name: encrypt secrets
-        run: printf 'very_important => %s\n' "$very_important" > secrets/very_important.txt
+      - name: Read test.txt
+        id: secret
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./secrets/very_important.txt
 
-      - name: decrypt secrets
-        run: |
-          git-crypt lock
+      - name: Echo test.txt
+        run: echo "${{ steps.secret.outputs.content }}"
+
+      # - name: decrypt secrets
+      #   run: |
+      #     git-crypt lock
