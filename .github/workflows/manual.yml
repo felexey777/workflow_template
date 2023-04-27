@@ -40,7 +40,7 @@ jobs:
 
       - name: encrypt secrets
         run: |
-          echo "${GITCRYPT_KEY}" | base64 --decode > ./crypt_key
+          # echo "${GITCRYPT_KEY}" | base64 --decode > ./crypt_key
           git-crypt unlock ./crypt_key
 
       - name: Read test.txt
