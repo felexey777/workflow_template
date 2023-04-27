@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      name:
+      brand:
         # Friendly description to be shown in the UI instead of 'name'
         description: "Name of the application to greet"
         # Default value if no value is explicitly provided
@@ -27,21 +27,28 @@ jobs:
     steps:
       # Runs a single command using the runners shell
       - name: Send greeting
-        run: echo "Hello ${{ inputs.name }}"
-
-      - name: install git-crypt
         run: |
-          sudo apt-get update
-          sudo apt-get install git-crypt
+          echo "Hello => ${{ inputs.brand }}"
+          echo "secrets => ${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/checkout@master
+      - name: Unlock secrets
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+
+      # - name: install git-crypt
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install git-crypt
 
       - uses: actions/checkout@v3
         with:
           fetch-depth: "0"
 
-      - name: encrypt secrets
-        run: |
-          # echo "${GITCRYPT_KEY}" | base64 --decode > ./crypt_key
-          git-crypt unlock ./crypt_key
+      # - name: encrypt secrets
+      #   run: |
+      #     git-crypt unlock ./crypt_key
 
       - name: Read test.txt
         id: secret
@@ -50,8 +57,17 @@ jobs:
           path: ./secrets/very_important.txt
 
       - name: Echo test.txt
-        run: echo "${{ steps.secret.outputs.content }}"
+        run: echo "test.txt => ${{ steps.secret.outputs.content }}"
 
-      - name: decrypt secrets
-        run: |
-          git-crypt lock
+      - name: Read crypt_key
+        id: crypt_key
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./crypt_test
+
+      - name: Echo crypt_key
+        run: echo "crypt_key => ${{ steps.crypt_key.outputs.content }}"
+
+      # - name: decrypt secrets
+      #   run: |
+      #     git-crypt lock
