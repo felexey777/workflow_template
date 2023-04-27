@@ -31,7 +31,7 @@ jobs:
 
       - name: install git-crypt
         run: |
-          sudo apt-get update
+          # sudo apt-get update
           sudo apt-get install git-crypt
 
       - uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
 
       - name: encrypt secrets
         run: |
-          git-crypt unlock ./crypt_key
+          git-crypt unlock ./.crypt_key
 
       - name: encrypt secrets
         run: printf 'very_important => %s\n' "$very_important" > secrets/very_important.txt
