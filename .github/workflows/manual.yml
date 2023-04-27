@@ -29,18 +29,18 @@ jobs:
       - name: Send greeting
         run: echo "Hello ${{ inputs.name }}"
 
-      # - name: install git-crypt
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install git-crypt
+      - name: install git-crypt
+        run: |
+          sudo apt-get update
+          sudo apt-get install git-crypt
 
       - uses: actions/checkout@v3
         with:
           fetch-depth: "0"
 
-      # - name: encrypt secrets
-      #   run: |
-      #     git-crypt unlock ./crypt_key
+      - name: encrypt secrets
+        run: |
+          git-crypt unlock ./crypt_key
 
       - name: Read test.txt
         id: secret
