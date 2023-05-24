@@ -1,0 +1,15 @@
+{
+  "name": "github-actions-test",
+  "version": "0.0.1",
+  "scripts": {
+    "android": "react-native run-android"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.71.3"
+  },
+  "devDependencies": {
+    "@babel/core": "7.21.0",
+    "typescript": "4.8.4"
+  }
+}

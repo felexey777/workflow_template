@@ -15,33 +15,33 @@ on:
         default: "Alex"
         # Input has to be provided for the workflow to run
         required: true
+      title:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: "Name of the application to greet"
+        # Default value if no value is explicitly provided
+        default: "Manual workflow"
+        # Input has to be provided for the workflow to run
+        required: true
+env:
+  NODE_VERSION: "18"
+  NODE_OPTIONS: "--max_old_space_size=4096"
+  RUBY_VERSION: "3.0.5"
+  JAVA_VERSION: "11"
+  JAVA_TOOL_OPTIONS: "-Xmx4g -XX:+UseParallelGC"
+  GRADLE_OPTS: '-Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -XX:+HeapDumpOnOutOfMemoryError"'
+  EMULATOR_API: "27"
+  EMULATOR_ARCH: "x86"
+  EMULATOR_TARGET: "default"
+  ENV_VAR: "staging"
+  GITHUB_EVENT_PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  init_manual_workflow:
-    # The type of runner that the job will run on
+  matrix-build:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy:
+      matrix:
+        brand: ["Test", "Test1"]
     steps:
-      # Runs a single command using the runners shell
-      - name: Send greeting
-        run: |
-          echo "Hello => ${{ inputs.brand }}"
-          echo "secrets => ${{ secrets.GIT_CRYPT_KEY }}"
-
-      - uses: actions/checkout@v3
-      - name: Unlock secrets
-        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
-        env:
-          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
-
-      - name: Read test.txt
-        id: secret
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./secrets/very_important.txt
-
-      - name: Echo test.txt
-        run: echo "very_important.txt => ${{ steps.secret.outputs.content }}"
+      - name: analysis
+        run: echo analysis ${{ matrix.brand }}

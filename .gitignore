@@ -33,3 +33,4 @@ google-services.json
 *.hprof
 crypt_key
 .secrets
+node_modules/
