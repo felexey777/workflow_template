@@ -35,6 +35,9 @@ on:
       isShouldRunE2EBrands:
         required: true
         default: '["Test3"]'
+      releaseTag:
+        required: false
+        description: "If you want to create a release, enter the tag name in the format v1.0.0"
 env:
   DEFAULT_BRANDS: '["Test4"]'
   DEFAULT_IS_SHOULD_RUN_ANALYSIS_BRANDS: '["Test5"]'
@@ -47,6 +50,7 @@ jobs:
       brands: ${{ steps.matrix-generate.outputs.brands }}
       isShouldRunAnalysisBrands: ${{ steps.matrix-generate.outputs.isShouldRunAnalysisBrands }}
       isShouldRunE2EBrands: ${{ steps.matrix-generate.outputs.isShouldRunE2EBrands }}
+      releaseTag: ${{ steps.matrix-generate.outputs.releaseTag }}
     steps:
       - name: Generate Matrix
         id: matrix-generate
@@ -60,6 +64,9 @@ jobs:
           isShouldRunE2EBrands='${{ github.event.client_payload.isShouldRunE2EBrands && toJSON(github.event.client_payload.isShouldRunE2EBrands) || inputs.isShouldRunE2EBrands  || env.DEFAULT_IS_SHOULD_RUN_ANALYSIS_BRANDS}}'
           # echo "step isShouldRunE2EBrands => ${isShouldRunE2EBrands}"
           echo ::set-output name=isShouldRunE2EBrands::${isShouldRunE2EBrands}
+          releaseTag='${{ github.event.client_payload.releaseTag || inputs.releaseTag}}'
+          echo "step releaseTag => ${releaseTag}"
+          echo ::set-output name=releaseTag::${releaseTag}
 
   matrix-build:
     runs-on: ubuntu-latest
@@ -81,7 +88,7 @@ jobs:
         run: |
           echo 'build brand => ${{ matrix.brand }}'
           echo 'refs/tags/v => ${{ github.ref }}'
-          echo 'is Prod Release ${{ startsWith(github.ref, 'refs/tags/v') }}'
+          echo 'is Prod Release ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(needs.brand-generate.outputs.releaseTag, 'refs/tags/v') }}'
           echo "version_name => ${GITHUB_REF#refs/tags/v}"
           echo "version_number => $(expr 1000 + $GITHUB_RUN_NUMBER)"
       - name: e2e
