@@ -1,0 +1,6 @@
+*.pbxproj -text
+
+# Secrets encrypted with git-crypt
+secrets/** filter=git-crypt diff=git-crypt
+.env filter=git-crypt diff=git-crypt
+

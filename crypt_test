@@ -1,0 +1,3 @@
+brands='${{ github.event.client_payload.brands && toJSON(github.event.client_payload.brands) || env.DEFAULT_BRANDS}}'
+
+brand: ${{ fromJSON(needs.generate-matrix.outputs.brands) }}

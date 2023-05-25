@@ -1,0 +1,6 @@
+{
+  "event_type": "build",
+  "client_payload": {
+    "brands": ["Test1", "Test2"]
+  }
+}

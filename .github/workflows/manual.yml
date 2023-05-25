@@ -1,0 +1,47 @@
+# This is a basic workflow that is manually triggered
+
+name: manual
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch_:
+    # Inputs the workflow accepts.
+    inputs:
+      brand:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: "Name of the application to greet"
+        # Default value if no value is explicitly provided
+        default: "Alex"
+        # Input has to be provided for the workflow to run
+        required: true
+      title:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: "Name of the application to greet"
+        # Default value if no value is explicitly provided
+        default: "Manual workflow"
+        # Input has to be provided for the workflow to run
+        required: true
+env:
+  NODE_VERSION: "18"
+  NODE_OPTIONS: "--max_old_space_size=4096"
+  RUBY_VERSION: "3.0.5"
+  JAVA_VERSION: "11"
+  JAVA_TOOL_OPTIONS: "-Xmx4g -XX:+UseParallelGC"
+  GRADLE_OPTS: '-Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx4g -XX:+HeapDumpOnOutOfMemoryError"'
+  EMULATOR_API: "27"
+  EMULATOR_ARCH: "x86"
+  EMULATOR_TARGET: "default"
+  ENV_VAR: "staging"
+  GITHUB_EVENT_PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  matrix-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        brand: ["Test", "Test1"]
+    steps:
+      - name: analysis
+        run: echo analysis ${{ matrix.brand }}

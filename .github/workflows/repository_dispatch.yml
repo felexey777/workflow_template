@@ -1,0 +1,49 @@
+name: Android
+
+on:
+  repository_dispatch:
+    types:
+      - "test run"
+      - "test::*"
+  workflow_dispatch:
+    inputs:
+      brands:
+        required: true
+        default: '["Test1","Test2", "Test3"]'
+      isShouldRunAnalysisBrands:
+        required: true
+        default: '["Test1"]'
+      isShouldRunE2EBrands:
+        required: true
+        default: '["Test1"]'
+  pull_request:
+  push:
+env:
+  DEFAULT_BRANDS: '["Test1"]'
+
+jobs:
+  brand-generate:
+    runs-on: ubuntu-latest
+    outputs:
+      brands: ${{ steps.matrix-generate.outputs.brands }}
+    steps:
+      - name: Generate Matrix
+        id: matrix-generate
+        run: |
+          brands='${{ github.event.client_payload.brands && toJSON(github.event.client_payload.brands) || inputs.brands  || env.DEFAULT_BRANDS}}'
+          echo "step brands => ${brands}"
+          echo ::set-output name=brands::${brands}
+          isShouldRunAnalysisBrands='${{ github.event.client_payload.isShouldRunAnalysisBrands && toJSON(github.event.client_payload.isShouldRunAnalysisBrands) || inputs.isShouldRunAnalysisBrands  || env.DEFAULT_BRANDS}}'
+          echo "step isShouldRunAnalysisBrands => ${isShouldRunAnalysisBrands}"
+          echo ::set-output name=isShouldRunAnalysisBrands::${isShouldRunAnalysisBrands}
+
+  matrix-build:
+    runs-on: ubuntu-latest
+    needs: brand-generate
+    strategy:
+      matrix:
+        brand: ${{ fromJSON(needs.brand-generate.outputs.brands) }}
+
+    steps:
+      - run: |
+          echo 'brand => ${{ matrix.brand }}'
