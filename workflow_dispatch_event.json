@@ -1,0 +1,7 @@
+{
+  "action": "workflow_dispatch",
+  "inputs": {
+    "releaseTag": "v1.0.0",
+    "brands": "[\"Test2\"]"
+  }
+}
