@@ -82,7 +82,7 @@ jobs:
           echo 'build brand => ${{ matrix.brand }}'
           echo 'refs/tags/v => ${{ github.ref }}'
           echo 'version_name => ${GITHUB_REF#refs/tags/v}'
-          echo 'version_number => ${expr 1000 + $GITHUB_RUN_NUMBER}'
+          echo 'version_number => ${{ github.GITHUB_RUN_NUMBER }}'
           echo 'is Prod Release ${{ startsWith(github.ref, 'refs/tags/v') }}'
       - name: e2e
         if: contains(fromJSON(needs.brand-generate.outputs.isShouldRunE2EBrands), matrix.brand)
