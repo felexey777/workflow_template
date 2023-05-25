@@ -9,32 +9,34 @@ on:
     inputs:
       brands:
         required: true
-        default: '["Test1","Test2", "Test3"]'
+        default: '["Test1", "Test2", "Test3", "Test4", "Test5"]'
       isShouldRunAnalysisBrands:
         required: true
-        default: '["Test1"]'
+        default: '["Test2"]'
       isShouldRunE2EBrands:
         required: true
-        default: '["Test1"]'
+        default: '["Test3"]'
   pull_request:
   push:
 env:
-  DEFAULT_BRANDS: '["Test1"]'
+  DEFAULT_BRANDS: '["Test4"]'
+  DEFAULT_IS_SHOULD_RUN_ANALYSIS_BRANDS: '["Test5"]'
 
 jobs:
   brand-generate:
     runs-on: ubuntu-latest
     outputs:
       brands: ${{ steps.matrix-generate.outputs.brands }}
+      isShouldRunAnalysisBrands: ${{ steps.matrix-generate.outputs.isShouldRunAnalysisBrands }}
     steps:
       - name: Generate Matrix
         id: matrix-generate
         run: |
           brands='${{ github.event.client_payload.brands && toJSON(github.event.client_payload.brands) || inputs.brands  || env.DEFAULT_BRANDS}}'
-          echo "step brands => ${brands}"
+          # echo "step brands => ${brands}"
           echo ::set-output name=brands::${brands}
-          isShouldRunAnalysisBrands='${{ github.event.client_payload.isShouldRunAnalysisBrands && toJSON(github.event.client_payload.isShouldRunAnalysisBrands) || inputs.isShouldRunAnalysisBrands  || env.DEFAULT_BRANDS}}'
-          echo "step isShouldRunAnalysisBrands => ${isShouldRunAnalysisBrands}"
+          isShouldRunAnalysisBrands='${{ github.event.client_payload.isShouldRunAnalysisBrands && toJSON(github.event.client_payload.isShouldRunAnalysisBrands) || inputs.isShouldRunAnalysisBrands  || env.DEFAULT_IS_SHOULD_RUN_ANALYSIS_BRANDS}}'
+          # echo "step isShouldRunAnalysisBrands => ${isShouldRunAnalysisBrands}"
           echo ::set-output name=isShouldRunAnalysisBrands::${isShouldRunAnalysisBrands}
 
   matrix-build:
@@ -47,3 +49,9 @@ jobs:
     steps:
       - run: |
           echo 'brand => ${{ matrix.brand }}'
+          echo 'AnalysisBrands => ${{ needs.brand-generate.outputs.isShouldRunAnalysisBrands }}'
+          echo 'isShouldRunAnalysisBrands => ${{ contains(fromJSON(needs.brand-generate.outputs.isShouldRunAnalysisBrands), matrix.brand) }}'
+      - name: Analysis
+        if: contains(fromJSON(needs.brand-generate.outputs.isShouldRunAnalysisBrands), matrix.brand)
+        run: |
+          echo 'Analysis brand => ${{ matrix.brand }}'
