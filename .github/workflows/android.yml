@@ -37,7 +37,7 @@ on:
         default: '["Test3"]'
       releaseTag:
         required: false
-        description: "If you want to create a release, enter the tag name in the format v1.0.0"
+        description: "If you want to create a release, enter the tag name in the format refs/tags/v1.0.0"
 env:
   DEFAULT_BRANDS: '["Test4"]'
   DEFAULT_IS_SHOULD_RUN_ANALYSIS_BRANDS: '["Test5"]'
@@ -89,9 +89,10 @@ jobs:
           echo 'build brand => ${{ matrix.brand }}'
           echo 'refs/tags/v => ${{ github.ref }}'
           echo 'releaseTag => ${{ needs.brand-generate.outputs.releaseTag }}'
-          echo 'is Prod Release ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(needs.brand-generate.outputs.releaseTag, 'v') }}'
-          echo "version_name => ${GITHUB_REF#refs/tags/v}"
+          echo 'is Prod Release ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(needs.brand-generate.outputs.releaseTag, 'refs/tags/v') }}'
           echo "version_number => $(expr 1000 + $GITHUB_RUN_NUMBER)"
+          TAG="${{ startsWith(needs.brand-generate.outputs.releaseTag, 'refs/tags/v') &&  needs.brand-generate.outputs.releaseTag || startsWith(github.ref, 'refs/tags/v') &&  github.ref}}"
+          echo "version_name => ${TAG#refs/tags/v}"
       - name: e2e
         if: contains(fromJSON(needs.brand-generate.outputs.isShouldRunE2EBrands), matrix.brand)
         run: |
